@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+
+  huionlune_backend:
+    container_name: huionlune_backend
+    image: huionlune_backend:v0.0.1
+
+    ports:
+      - "8088:8088"
+
+    environment:
+      - WORKERS_PER_CORE=1
+      - MAX_WORKERS=12
+      - HOST=0.0.0.0
+      - PORT=8088
+      - BIND=0.0.0.0:8088
+      - LOG_LEVEL=info
+      - TIMEOUT=20 # time out for worker, after that, kill and restart
+
+    restart: on-failure
+    volumes:
+    # Path on the host, relative to the Compose file
+      - ./app:/app
