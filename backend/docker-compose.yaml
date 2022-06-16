@@ -18,6 +18,9 @@ services:
       - LOG_LEVEL=info
       - TIMEOUT=20 # time out for worker, after that, kill and restart
 
+    env_file:
+      - .env
+
     restart: on-failure
     volumes:
     # Path on the host, relative to the Compose file

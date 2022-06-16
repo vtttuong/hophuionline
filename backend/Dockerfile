@@ -2,8 +2,7 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
 
 #COPY ./requirements.txt /app/requirements.txt
 
-# RUN pip install pandas==1.3.5 \
-#     pyarrow==7.0.0
+RUN pip install psycopg2==2.9.3
 
 # Add a /app volume
 VOLUME ["/app"]
