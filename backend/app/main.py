@@ -1,8 +1,9 @@
 import psycopg2, os
 from flask import Flask
-
+from flask_cors import CORS
 app = Flask(__name__)
-
+ 
+CORS(app)
 @app.route("/")
 def hello():
     return "Hello World from Flask in a uWSGI Nginx Docker container with \
