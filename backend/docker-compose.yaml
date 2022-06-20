@@ -10,13 +10,12 @@ services:
       - "8088:8088"
 
     environment:
-      - WORKERS_PER_CORE=1
-      - MAX_WORKERS=12
-      - HOST=0.0.0.0
-      - PORT=8088
-      - BIND=0.0.0.0:8088
-      - LOG_LEVEL=info
-      - TIMEOUT=20 # time out for worker, after that, kill and restart
+      - FLASK_APP=main.py
+      - FLASK_DEBUG=1
+      - 'RUN=flask run --host=0.0.0.0 --port=8088'
+    command: flask run --host=0.0.0.0 --port=8088
+    # Infinite loop, to keep it alive, for debugging
+    # command: bash -c "while true; do echo 'sleeping...' && sleep 10; done"
 
     env_file:
       - .env

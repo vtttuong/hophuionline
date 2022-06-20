@@ -1,34 +1,24 @@
-from fastapi import Request, FastAPI
-from datetime import datetime
-
-import asyncio
-import json
 import psycopg2, os
+from flask import Flask
 
-async def get_db_conn():
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "Hello World from Flask in a uWSGI Nginx Docker container with \
+     Python 3.8 (from the example template)"
+
+def get_db_conn():
     return psycopg2.connect(
         database=os.getenv("DB_DATABASE"),
         user=os.getenv("DB_USERNAME"), password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"), port= os.getenv("DB_PORT"), sslmode=os.getenv("DB_SSL_MODE")
     )
 
-app = FastAPI()
+@app.route("/db_version")
+def db_version():
 
-async def coroutine_echo_data(data):
-    return data
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
-
-@app.get("/db_version")
-async def db_version():
-
-    conn = await get_db_conn()
+    conn = get_db_conn()
     cursor = conn.cursor()
     cursor.execute("select version()")
 
@@ -39,8 +29,6 @@ async def db_version():
 
     return f"Connection established to: {data}"
 
-@app.post('/results')
-async def get_body(request: Request):
-    data = await request.json()
-
-    return coroutine_echo_data(data)
+if __name__ == "__main__":
+    # Only for debugging while developing
+    app.run(host="0.0.0.0", debug=True, port=8088)

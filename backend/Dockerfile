@@ -1,12 +1,6 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
+FROM tiangolo/uwsgi-nginx-flask:python3.7
 
-#COPY ./requirements.txt /app/requirements.txt
-
-RUN pip install psycopg2==2.9.3
+RUN pip install psycopg2-binary flask-sqlalchemy Flask-Migrate
 
 # Add a /app volume
 VOLUME ["/app"]
-
-#COPY ./app /app
-
-CMD [ "/start-reload.sh" ]

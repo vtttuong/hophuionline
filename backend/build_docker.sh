@@ -4,7 +4,7 @@ docker build -t huionlune_backend:v0.0.1 -f Dockerfile .
 echo "Composing..."
 
 echo "============"
-echo "Visit http://localhost:8088/docs to see API end points"
+echo "Visit http://localhost:8088/ to intereact with API"
 echo "============"
 
 sleep 5
