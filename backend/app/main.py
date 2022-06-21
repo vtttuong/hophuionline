@@ -1,22 +1,26 @@
 from ast import Str
+import imp
 from typing import List
 from xmlrpc.client import Boolean
 import psycopg2
 import os
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_cors import CORS
-import user
+from user import *
+from hui_group import *
+
+
 app = Flask(__name__)
 
 CORS(app)
 
 
-def result_template(is_success:Boolean, results: List, msg:Str):
-    return {
+def result_template(is_success: Boolean, results: List, msg: Str = ''):
+    return jsonify({
         "is_success": is_success,
         "results": results,
         "msg": msg
-    }
+    })
 
 
 API_PREFIX = '/api/v1'
@@ -34,39 +38,56 @@ def get_db_conn():
         user=os.getenv("DB_USERNAME"), password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"), port=os.getenv("DB_PORT"), sslmode=os.getenv("DB_SSL_MODE")
     )
-# TODO Get information about user by user_id  BINH
 
 
 @app.route(f'{API_PREFIX}/user_info/<user_id>', methods=['GET'])
 def get_user_info(user_id):
     try:
-        user = user.get_user_info(user_id, get_db_conn)
-    except Exception as e:
-        pass
+        user_info = UserInfo.get_user_info(user_id, get_db_conn)
+        return result_template(True, [])
+    except BaseException as e:
+        return result_template(False, [], str(e))
 
 
 @app.route(f'{API_PREFIX}/user_info', methods=['POST'])
-# TODO Create user with information BINH
 def create_user():
-    pass
+    try:
+        user_info = UserInfo.convert_from_json(request.json)
+        user_info.create_user(get_db_conn)
+        return result_template(True, [])
+    except BaseException as e:
+        return result_template(False, [], str(e))
 
 
 @app.route(f'{API_PREFIX}/hui/<user_id>', methods=['GET'])
-# TODO Get all hui groups by user id BINH
 def get_hui_groups(user_id):
-    pass
+    try:
+        result = HuiGroup.get_hui_groups(user_id,get_db_conn)
+        return result_template(True, result)
+    except BaseException as e:
+        return result_template(False, [], str(e))    
 
 
 @app.route(f'{API_PREFIX}/hui/<user_id>', methods=['POST'])
-# TODO Create hui group by user id BINH
 def create_hui_group(user_id):
-    pass
+    try:
+        request.json['owner_id'] = user_id
+        hui_group = HuiGroup.convert_from_json(request.json)
+        hui_group.create_hui_group(get_db_conn)
+        return result_template(True, [])
+    except BaseException as e:
+        return result_template(False, [], str(e))
 
 
-@app.route(f'{API_PREFIX}/hui/invite/<user_id>', methods=['POST'])
-# TODO Invite user join hui group
-def invite_to_join_hui_group(user_id):
-    pass
+@app.route(f'{API_PREFIX}/hui/invite', methods=['POST'])
+def invite_to_join_hui_group():
+    user_id = request.json['user_id']
+    hui_id = request.json['hui_id']
+    status , msg =HuiGroup.invite_user(user_id,hui_id,get_db_conn)
+    if status == True:
+        return result_template(True, [])
+    else:
+        return result_template(False, [], str(msg))
 
 
 @app.route("/db_version")
@@ -75,7 +96,7 @@ def db_version():
     conn = get_db_conn()
     cursor = conn.cursor()
     cursor.execute("select version()")
-
+     
     data = cursor.fetchone()
 
     # please close conn manually
