@@ -146,9 +146,32 @@ def invite_to_join_hui_group():
   else:
     return result_template(False, [], str(msg))
 
+# Get all transaction by hui id
+
+
+@app.route(f'{API_PREFIX}/transaction/<hui_id>', methods=['GET'])
+def get_all_transactions(hui_id):
+  try:
+    result = TransactionLog.get_all_transaction_by_group(hui_id, get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+
+# withdraw_money from hui group and increase balance in self wallet
+@app.route(f'{API_PREFIX}/withdraw_money', methods=['POST'])
+def withdraw_money():
+  try:
+    user_id = request.json['user_id']
+    hui_id = request.json['hui_id']
+    amount = request.json['amount']
+    UserInfo.withdraw_money(user_id, hui_id, amount,get_db_conn)
+    return result_template(True, [])
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+
 # Create transaction
-
-
 @app.route(f'{API_PREFIX}/transaction', methods=['POST'])
 def create_transaction():
   try:

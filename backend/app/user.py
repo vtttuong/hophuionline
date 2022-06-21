@@ -17,6 +17,7 @@ class UserInfo:
     self.balance = balance
     self.password = password
 
+
   def create_user(self, get_db_conn):
     with get_db_conn() as conn:
       cursor = conn.cursor()
@@ -40,7 +41,32 @@ class UserInfo:
             """
       cursor.execute(query)
 
+  @staticmethod
+  def withdraw_money(user_id,hui_id,amount,get_db_conn):
+    with get_db_conn() as conn:
+      query = f"""
+        UPDATE
+          USERS_IN_GROUP
+        SET 
+          withdrawal_amount = {amount},
+          withdrawal_date = CURRENT_DATE
+        WHERE
+          user_id = {user_id}
+        AND
+          hui_id = {hui_id};
+      """ 
+      cursor = conn.cursor()
+      cursor.execute(query)
 
+      query = f"""
+        UPDATE 
+          USER_INFO
+        SET
+          BALANCE = BALANCE + {amount}
+        WHERE
+          id = {user_id};
+      """
+      cursor.execute(query)
   @staticmethod
   def find_user_by_phone_number(phone_number, get_db_conn):
     with get_db_conn() as conn:
