@@ -31,7 +31,7 @@ class GiatHuiLog:
                     '{self.hui_id}',
                     {self.ki_hui},
                     '{self.amount}',
-                    '{self.created_date if self.created_date is not None else 'CURRENT_DATE'}'
+                    {f"{self.created_date}" if self.created_date is not None else 'CURRENT_DATE'}
                      )
                 RETURNING ID;
             """
