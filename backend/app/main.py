@@ -9,7 +9,7 @@ from flask_cors import CORS
 from giat_hui_log import GiatHuiLog
 from user import *
 from hui_group import *
-
+from transactions import *
 
 app = Flask(__name__)
 
@@ -67,6 +67,20 @@ def create_user():
   try:
     user_info = UserInfo.convert_from_json(request.json)
     user_info.create_user(get_db_conn)
+    return result_template(True, [])
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+# Update user status in group
+
+
+@app.route(f'{API_PREFIX}/hui/user_status', methods=['PUT'])
+def update_user_status():
+  try:
+    user_id = request.json['user_id']
+    hui_id = request.json['hui_id']
+    status = request.json['status']
+    HuiGroup.update_user_status_in_group(user_id, hui_id, status, get_db_conn)
     return result_template(True, [])
   except BaseException as e:
     return result_template(False, [], str(e))
@@ -131,6 +145,24 @@ def invite_to_join_hui_group():
     return result_template(True, [])
   else:
     return result_template(False, [], str(msg))
+
+# Create transaction
+
+
+@app.route(f'{API_PREFIX}/transaction', methods=['POST'])
+def create_transaction():
+  try:
+    debtor_id = None
+    user_id = request.json['user_id']
+    hui_id = request.json['hui_id']
+    amount = request.json['amount']
+    if 'debtor_id' in request.json.keys():
+      debtor_id = request.json['debtor_id']
+
+    TransactionLog.payment(user_id, hui_id, amount, get_db_conn, debtor_id)
+    return result_template(True, [])
+  except BaseException as e:
+    return result_template(False, [], str(e))
 
 
 @app.route("/db_version")
