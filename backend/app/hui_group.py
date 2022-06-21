@@ -70,6 +70,24 @@ class HuiGroup:
       self.invite_user(self.owner_id, group_id, get_db_conn, 'JOINED')
 
   @staticmethod
+  def update_user_status_in_group(user_id,hui_id,status,get_db_conn):
+    with get_db_conn() as conn:
+      cursor = conn.cursor()
+
+      query = f"""
+                UPDATE 
+                  USERS_IN_GROUP
+                SET
+                  STATUS = '{status}'
+                WHERE
+                  USER_ID = {user_id}
+                AND
+                  HUI_id = {hui_id};
+      """      
+      cursor.execute(query)
+
+
+  @staticmethod
   def invite_user(user_id, hui_id, get_db_conn, status='PENDING'):
     with get_db_conn() as conn:
       cursor = conn.cursor()
