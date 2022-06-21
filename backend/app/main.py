@@ -128,9 +128,17 @@ def invite_to_join_hui_group():
   else:
     return result_template(False, [], str(msg))
 
+# Get all transaction by hui id
+@app.route(f'{API_PREFIX}/transaction/<hui_id>', methods=['GET'])
+def get_all_transactions(hui_id):
+  try:
+    result = TransactionLog.get_all_transaction_by_group(hui_id,get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+
 # Create transaction
-
-
 @app.route(f'{API_PREFIX}/transaction', methods=['POST'])
 def create_transaction():
   try:

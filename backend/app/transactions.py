@@ -1,6 +1,41 @@
+
+
 class TransactionLog:
   def __init__(self) -> None:
     pass
+
+  @staticmethod
+  def get_all_transaction_by_group(hui_id, get_db_conn):
+    with get_db_conn() as conn:
+      cursor = conn.cursor()
+      query = f"""
+        SELECT
+          TL.*,
+          UI.FULL_NAME,
+          UI.EMAIL,
+          UI.CREDIT_SCORE,
+          UI.PHONE_NUMBER
+        FROM 
+          TRANSACTION_LOG TL
+        JOIN
+          USER_INFO UI
+        ON
+          UI.ID = TL.USER_ID
+        WHERE
+          HUI_ID = {hui_id}
+      """
+      cursor.execute(query)
+
+      result = list()
+      col_name = [desc[0] for desc in cursor.description]
+      rows = cursor.fetchall()
+      for row in rows:
+        trans = dict()
+        for name in col_name:
+          trans[name] = row[0]
+          row = row[1:]
+        result.append(trans)
+      return result
 
   @staticmethod
   def payment(user_id, hui_id, amount, get_db_conn, debtor_id=None):
