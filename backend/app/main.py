@@ -6,6 +6,7 @@ import psycopg2
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from giat_hui_log import GiatHuiLog
 from user import *
 from hui_group import *
 
@@ -90,6 +91,23 @@ def get_hui_groups(user_id):
   except BaseException as e:
     return result_template(False, [], str(e))
 
+# GIAT HUI
+@app.route(f'{API_PREFIX}/giat_hui', methods=['POST'])
+def giat_hui():
+  try:
+    result = GiatHuiLog(**request.json).giat_hui(get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+# Get all giat_hui log in a hui group
+@app.route(f'{API_PREFIX}/giat_hui_log/<hui_id>', methods=['GET'])
+def get_giat_hui_logs(hui_id):
+  try:
+    result = GiatHuiLog.get_giat_hui_log(hui_id, get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
 
 # Create hui group
 @app.route(f'{API_PREFIX}/hui/<user_id>', methods=['POST'])
