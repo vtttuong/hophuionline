@@ -1,3 +1,4 @@
+from sqlite3 import Cursor
 from typing_extensions import Self
 from types import SimpleNamespace as Namespace
 import json
@@ -105,8 +106,37 @@ class HuiGroup:
         return True, cursor.fetchone()[0]
 
   @staticmethod
-  def get_all_users_in_group(hui_id):
-    pass
+  def get_all_users_in_group(hui_id, get_db_conn):
+    with get_db_conn() as conn:
+      cursor = conn.cursor()
+      query = f"""
+        SELECT
+          *
+        FROM 
+          USERS_IN_GROUP UIG
+        JOIN
+          USER_INFO UI
+        ON
+          UI.ID = UIG.USER_ID
+        JOIN
+          HUI_GROUP HG
+        ON
+          HG.ID = UIG.HUI_ID
+        WHERE
+          HG.ID = {hui_id}
+      """
+      cursor.execute(query)
+
+      result = list()
+      col_name = [desc[0] for desc in cursor.description]
+      rows = cursor.fetchall()
+      for row in rows:
+        user = dict()
+        for name in col_name:
+          user[name] = row[0]
+          row = row[1:]
+        result.append(user)
+    return result
 
   @staticmethod
   def get_hui_groups(user_id, get_db_conn):

@@ -67,6 +67,16 @@ def create_user():
     return result_template(False, [], str(e))
 
 
+
+@app.route(f'{API_PREFIX}/hui/get_users/<hui_id>', methods=['GET'])
+def get_users_in_group(hui_id):
+  try:
+    result = HuiGroup.get_all_users_in_group(hui_id,get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+
 @app.route(f'{API_PREFIX}/hui/<user_id>', methods=['GET'])
 def get_hui_groups(user_id):
   try:
