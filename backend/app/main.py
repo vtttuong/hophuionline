@@ -40,6 +40,7 @@ def get_db_conn():
   )
 
 
+# Get user info by user id
 @app.route(f'{API_PREFIX}/user_info/<user_id>', methods=['GET'])
 def get_user_info(user_id):
   try:
@@ -48,15 +49,18 @@ def get_user_info(user_id):
   except BaseException as e:
     return result_template(False, [], str(e))
 
+
+# Find all users by phone number
 @app.route(f'{API_PREFIX}/user_info/find_user/<phone_number>', methods=['GET'])
 def find_users_by_phone_numer(phone_number):
   try:
-    user_info = UserInfo.find_user_by_phone_number(phone_number,get_db_conn)
+    user_info = UserInfo.find_user_by_phone_number(phone_number, get_db_conn)
     return result_template(True, user_info)
   except BaseException as e:
     return result_template(False, [], str(e))
 
 
+# Create user
 @app.route(f'{API_PREFIX}/user_info', methods=['POST'])
 def create_user():
   try:
@@ -67,16 +71,17 @@ def create_user():
     return result_template(False, [], str(e))
 
 
-
+# Get all users in group hui
 @app.route(f'{API_PREFIX}/hui/get_users/<hui_id>', methods=['GET'])
 def get_users_in_group(hui_id):
   try:
-    result = HuiGroup.get_all_users_in_group(hui_id,get_db_conn)
+    result = HuiGroup.get_all_users_in_group(hui_id, get_db_conn)
     return result_template(True, result)
   except BaseException as e:
     return result_template(False, [], str(e))
 
 
+# Get all hui groups of user
 @app.route(f'{API_PREFIX}/hui/<user_id>', methods=['GET'])
 def get_hui_groups(user_id):
   try:
@@ -86,6 +91,7 @@ def get_hui_groups(user_id):
     return result_template(False, [], str(e))
 
 
+# Create hui group
 @app.route(f'{API_PREFIX}/hui/<user_id>', methods=['POST'])
 def create_hui_group(user_id):
   try:
@@ -97,6 +103,7 @@ def create_hui_group(user_id):
     return result_template(False, [], str(e))
 
 
+# Invite user to join hui group
 @app.route(f'{API_PREFIX}/hui/invite', methods=['POST'])
 def invite_to_join_hui_group():
   user_id = request.json['user_id']
