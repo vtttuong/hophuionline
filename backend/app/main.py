@@ -70,6 +70,18 @@ def create_user():
   except BaseException as e:
     return result_template(False, [], str(e))
 
+# Update user status in group
+@app.route(f'{API_PREFIX}/hui/user_status', methods=['PUT'])
+def update_user_status():
+  try:
+    user_id = request.json['user_id']
+    hui_id = request.json['hui_id']
+    status = request.json['status']
+    HuiGroup.update_user_status_in_group(user_id, hui_id, status, get_db_conn)
+    return result_template(True, [])
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
 
 # Get all users in group hui
 @app.route(f'{API_PREFIX}/hui/get_users/<hui_id>', methods=['GET'])
