@@ -67,6 +67,16 @@ class UserInfo:
           id = {user_id};
       """
       cursor.execute(query)
+
+      query = f"""
+        UPDATE
+          HUI_GROUP
+        SET
+          BALANCE = BALANCE - {amount}
+        WHERE
+          ID = {hui_id}
+      """
+      cursor.execute(query)
   @staticmethod
   def find_user_by_phone_number(phone_number, get_db_conn):
     with get_db_conn() as conn:

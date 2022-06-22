@@ -80,5 +80,34 @@ class TransactionLog:
           )
           RETURNING ID;
         """
+      cursor.execute(query)
 
+      query = f"""
+        UPDATE 
+          HUI_GROUP
+        SET 
+          BALANCE = BALANCE + {amount}
+        WHERE
+          ID = {hui_id};
+      """
+      cursor.execute(query)
+
+      if debtor_id is None:
+        query = f"""
+          UPDATE
+            USER_INFO
+          SET
+            BALANCE = BALANCE - {amount}
+          WHERE
+            ID = {user_id}
+        """
+      else:
+        query = f"""
+          UPDATE
+            USER_INFO
+          SET
+            BALANCE = BALANCE - {amount}
+          WHERE
+            ID = {debtor_id}
+        """
       cursor.execute(query)

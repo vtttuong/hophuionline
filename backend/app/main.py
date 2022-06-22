@@ -46,7 +46,7 @@ def get_db_conn():
 def get_user_info(user_id):
   try:
     user_info = UserInfo.get_user_info(user_id, get_db_conn)
-    return result_template(True, [])
+    return result_template(True, [user_info])
   except BaseException as e:
     return result_template(False, [], str(e))
 
@@ -94,6 +94,15 @@ def get_users_in_group(hui_id):
     return result_template(True, result)
   except BaseException as e:
     return result_template(False, [], str(e))
+
+#Get information about hui group by hui_id
+@app.route(f'{API_PREFIX}/hui_info/<hui_id>', methods=['GET'])
+def get_hui_group(hui_id):
+  try:
+    result = HuiGroup.get_hui_group(hui_id, get_db_conn)
+    return result_template(True, [result])
+  except BaseException as e:
+    return result_template(False, [], str(e))  
 
 
 # Get all hui groups of user
@@ -171,7 +180,7 @@ def withdraw_money():
     return result_template(False, [], str(e))
 
 
-# Create transaction
+# Create transaction (insert monney into hui group)
 @app.route(f'{API_PREFIX}/transaction', methods=['POST'])
 def create_transaction():
   try:

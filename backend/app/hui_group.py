@@ -156,6 +156,44 @@ class HuiGroup:
         result.append(user)
     return result
 
+
+  @staticmethod
+  def get_hui_group(hui_id, get_db_conn):
+    result = list()
+    with get_db_conn() as conn:
+      cursor = conn.cursor()
+      query = f"""
+                SELECT
+                    HG.*,
+                    UIG.*,
+                    UI.FULL_NAME AS OWNER_NAME
+                FROM
+                    HUI_GROUP HG
+                JOIN
+                    USERS_IN_GROUP UIG
+                ON
+                    HG.ID = UIG.HUI_ID
+                JOIN
+                    USER_INFO UI
+                ON
+                    UI.ID = HG.OWNER_ID
+                WHERE
+                    HG.ID = {hui_id}
+            """
+      cursor.execute(query)
+      col_name = [desc[0] for desc in cursor.description]
+      rows = cursor.fetchall()
+      for row in rows:
+        hui_group = dict()
+        for name in col_name:
+          hui_group[name] = row[0]
+          row = row[1:]
+        result.append(hui_group)
+    return result[0]
+
+
+
+
   @staticmethod
   def get_hui_groups(user_id, get_db_conn):
     result = list()
