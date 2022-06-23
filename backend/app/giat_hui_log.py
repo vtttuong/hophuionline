@@ -16,7 +16,7 @@ class GiatHuiLog:
     self.created_date= created_date
 
 
-  def giat_hui(self, get_db_conn):
+  def chot_giat_hui(self, get_db_conn):
     with get_db_conn() as conn:
       cursor = conn.cursor()
       query = f"""
@@ -48,6 +48,7 @@ class GiatHuiLog:
       query = f"""
         SELECT
           GHL.CREATED_DATE as DATE,
+          HG.GROUP_NAME,
           GHL.KI_HUI, UI.FULL_NAME as NAME,
           GHL.AMOUNT
         FROM

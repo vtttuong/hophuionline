@@ -6,6 +6,7 @@ import psycopg2
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from vote_giat_hui import VoteGiatHui
 from giat_hui_log import GiatHuiLog
 from user import *
 from hui_group import *
@@ -102,7 +103,7 @@ def get_hui_group(hui_id):
     result = HuiGroup.get_hui_group(hui_id, get_db_conn)
     return result_template(True, [result])
   except BaseException as e:
-    return result_template(False, [], str(e))  
+    return result_template(False, [], str(e))
 
 
 # Get all hui groups of user
@@ -114,11 +115,11 @@ def get_hui_groups(user_id):
   except BaseException as e:
     return result_template(False, [], str(e))
 
-# GIAT HUI
-@app.route(f'{API_PREFIX}/giat_hui', methods=['POST'])
-def giat_hui():
+# CHOT GIAT HUI - CHU HUI MOI CO ACTION NAY
+@app.route(f'{API_PREFIX}/chot_giat_hui', methods=['POST'])
+def chot_giat_hui():
   try:
-    result = GiatHuiLog(**request.json).giat_hui(get_db_conn)
+    result = GiatHuiLog(**request.json).chot_giat_hui(get_db_conn)
     return result_template(True, result)
   except BaseException as e:
     return result_template(False, [], str(e))
@@ -131,6 +132,43 @@ def get_giat_hui_logs(hui_id):
     return result_template(True, result)
   except BaseException as e:
     return result_template(False, [], str(e))
+
+# VOTE GIAT HUI - CON HUI MOI CO ACTION NAY
+@app.route(f'{API_PREFIX}/vote_giat_hui', methods=['POST'])
+def vote_giat_hui():
+  try:
+    result = VoteGiatHui(**request.json).vote_giat_hui(get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+# Get all ki hui hien tai trong hui group,
+@app.route(f'{API_PREFIX}/get_ki_hui', methods=['POST'])
+def get_ki_hui():
+
+  hui_id = request.json['hui_id']
+
+  try:
+    result = VoteGiatHui.get_ki_hui(hui_id, get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
+
+# Get all vote_giat_hui in a hui group,
+# neu truyen vao ki hui thi se lay ki hui do, nguoc lai tra ra ki hui hien tai
+@app.route(f'{API_PREFIX}/get_vote_giat_hui', methods=['POST'])
+def get_vote_giat_hui():
+
+  hui_id = request.json['hui_id']
+  ki_hui = request.json['ki_hui'] if 'ki_hui' in request.json['ki_hui'] else None
+
+  try:
+    result = VoteGiatHui.get_vote_giat_hui(hui_id, ki_hui, get_db_conn)
+    return result_template(True, result)
+  except BaseException as e:
+    return result_template(False, [], str(e))
+
 
 # Create hui group
 @app.route(f'{API_PREFIX}/hui/<user_id>', methods=['POST'])
