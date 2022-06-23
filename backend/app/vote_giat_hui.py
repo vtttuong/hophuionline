@@ -19,7 +19,7 @@ class VoteGiatHui:
 
     if self.ki_hui is None:
       r = self.get_ki_hui(self.hui_id, get_db_conn)
-      self.ki_hui = r['ki_hui'] if 'ki_hui' in r['ki_hui'] else 0
+      self.ki_hui = r['ki_hui'] if 'ki_hui' in r else 0
 
     with get_db_conn() as conn:
       cursor = conn.cursor()
@@ -82,7 +82,7 @@ class VoteGiatHui:
   def get_vote_giat_hui(hui_id, ki_hui, get_db_conn):
     if ki_hui is None:
       r = VoteGiatHui.get_ki_hui(hui_id, get_db_conn)
-      ki_hui = r['ki_hui'] if 'ki_hui' in r['ki_hui'] else 0
+      ki_hui = r['ki_hui'] if 'ki_hui' in r else 0
 
     with get_db_conn() as conn:
       cursor = conn.cursor()

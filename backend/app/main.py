@@ -161,7 +161,7 @@ def get_ki_hui():
 def get_vote_giat_hui():
 
   hui_id = request.json['hui_id']
-  ki_hui = request.json['ki_hui'] if 'ki_hui' in request.json['ki_hui'] else None
+  ki_hui = request.json['ki_hui'] if 'ki_hui' in request.json else None
 
   try:
     result = VoteGiatHui.get_vote_giat_hui(hui_id, ki_hui, get_db_conn)
@@ -199,9 +199,9 @@ def invite_to_join_hui_group():
 def check_dong_tien():
   try:
     user_id = request.json['user_id']
-    hui_id = request.json['hui_id']  
-    result = UserInfo.check_dong_tien(user_id,hui_id,get_db_conn) 
-    return result_template(True, [result]) 
+    hui_id = request.json['hui_id']
+    result = UserInfo.check_dong_tien(user_id,hui_id,get_db_conn)
+    return result_template(True, [result])
   except BaseException as e:
     return result_template(False, [], str(e))
 @app.route(f'{API_PREFIX}/transaction/<hui_id>', methods=['GET'])
