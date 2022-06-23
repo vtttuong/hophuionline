@@ -17,7 +17,6 @@ class UserInfo:
     self.balance = balance
     self.password = password
 
-
   def create_user(self, get_db_conn):
     with get_db_conn() as conn:
       cursor = conn.cursor()
@@ -42,7 +41,7 @@ class UserInfo:
       cursor.execute(query)
 
   @staticmethod
-  def withdraw_money(user_id,hui_id,amount,get_db_conn):
+  def withdraw_money(user_id, hui_id, amount, get_db_conn):
     with get_db_conn() as conn:
       query = f"""
         UPDATE
@@ -54,7 +53,7 @@ class UserInfo:
           user_id = {user_id}
         AND
           hui_id = {hui_id};
-      """ 
+      """
       cursor = conn.cursor()
       cursor.execute(query)
 
@@ -77,6 +76,7 @@ class UserInfo:
           ID = {hui_id}
       """
       cursor.execute(query)
+
   @staticmethod
   def find_user_by_phone_number(phone_number, get_db_conn):
     with get_db_conn() as conn:
@@ -101,8 +101,6 @@ class UserInfo:
         result.append(user)
     return result
 
-
-      
   @staticmethod
   def convert_from_json(request):
     return UserInfo(
@@ -134,3 +132,23 @@ class UserInfo:
     for name, value in zip(col_name, row):
       result[name] = value
     return result
+
+  @staticmethod
+  def check_dong_tien(user_id, hui_id, get_db_conn):
+    with get_db_conn() as conn:
+      cursor = conn.cursor()
+      query = f"""
+        SELECT 
+          max(transaction_date),
+          current_date
+        FROM 
+          transaction_log tl 
+        where 
+          user_id = {user_id} 
+        and 
+          hui_id = {hui_id}  
+      """
+      cursor.execute(query)
+      last_date = cursor.fetchone()
+
+    return last_date[0] == last_date[1]
