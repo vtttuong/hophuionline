@@ -162,9 +162,10 @@ def get_vote_giat_hui():
 
   hui_id = request.json['hui_id']
   ki_hui = request.json['ki_hui'] if 'ki_hui' in request.json else None
+  user_id = request.json['user_id'] if 'user_id' in request.json else None
 
   try:
-    result = VoteGiatHui.get_vote_giat_hui(hui_id, ki_hui, get_db_conn)
+    result = VoteGiatHui.get_vote_giat_hui(hui_id, user_id, ki_hui, get_db_conn)
     return result_template(True, result)
   except BaseException as e:
     return result_template(False, [], str(e))

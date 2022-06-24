@@ -79,7 +79,7 @@ class VoteGiatHui:
     return {'ki_hui': ki_hui}
 
   @staticmethod
-  def get_vote_giat_hui(hui_id, ki_hui, get_db_conn):
+  def get_vote_giat_hui(hui_id, user_id, ki_hui, get_db_conn):
     if ki_hui is None:
       r = VoteGiatHui.get_ki_hui(hui_id, get_db_conn)
       ki_hui = r['ki_hui'] if 'ki_hui' in r else 0
@@ -106,6 +106,7 @@ class VoteGiatHui:
         WHERE
           HG.ID = {hui_id}
           and VGH.KI_HUI = {ki_hui}
+          {f"and VGH.ID = {user_id}" if user_id is not None else ''}
       """
       cursor.execute(query)
 
