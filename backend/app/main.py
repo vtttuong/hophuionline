@@ -75,7 +75,7 @@ def create_user():
 # Update user status in group
 
 
-@app.route(f'{API_PREFIX}/hui/user_status', methods=['PUT'])
+@app.route(f'{API_PREFIX}/hui/user_status', methods=['POST'])
 def update_user_status():
   try:
     user_id = request.json['user_id']
