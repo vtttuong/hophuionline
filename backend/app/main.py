@@ -87,6 +87,13 @@ def update_user_status():
     return result_template(False, [], str(e))
 
 
+@app.route(f'{API_PREFIX}/hui_info/<hui_id>/<user_id>', methods=['GET'])
+def get_hui_info_by_user(hui_id,user_id):
+  try:
+    result = HuiGroup.get_hui_group_by_user(hui_id,user_id,get_db_conn)
+    return result_template(True, [result])
+  except BaseException as e:
+    return result_template(False, [], str(e))
 # Get all users in group hui
 @app.route(f'{API_PREFIX}/hui/get_users/<hui_id>', methods=['GET'])
 def get_users_in_group(hui_id):

@@ -70,7 +70,7 @@ class HuiGroup:
       self.invite_user(self.owner_id, group_id, get_db_conn, 'JOINED')
 
   @staticmethod
-  def update_user_status_in_group(user_id,hui_id,status,get_db_conn):
+  def update_user_status_in_group(user_id, hui_id, status, get_db_conn):
     with get_db_conn() as conn:
       cursor = conn.cursor()
 
@@ -83,9 +83,8 @@ class HuiGroup:
                   USER_ID = {user_id}
                 AND
                   HUI_id = {hui_id};
-      """      
+      """
       cursor.execute(query)
-
 
   @staticmethod
   def invite_user(user_id, hui_id, get_db_conn, status='PENDING'):
@@ -156,7 +155,6 @@ class HuiGroup:
         result.append(user)
     return result
 
-
   @staticmethod
   def get_hui_group(hui_id, get_db_conn):
     result = list()
@@ -191,8 +189,42 @@ class HuiGroup:
         result.append(hui_group)
     return result[0]
 
-
-
+  @staticmethod
+  def get_hui_group_by_user(hui_id, user_id, get_db_conn):
+    result = list()
+    with get_db_conn() as conn:
+      cursor = conn.cursor()
+      query = f"""
+                SELECT
+                    HG.*,
+                    UIG.hui_id,
+                    UIG.user_id,
+                    UI.FULL_NAME AS OWNER_NAME
+                FROM
+                    HUI_GROUP HG
+                JOIN
+                    USERS_IN_GROUP UIG
+                ON
+                    HG.ID = UIG.HUI_ID
+                JOIN
+                    USER_INFO UI
+                ON
+                    UI.ID = HG.OWNER_ID
+                 WHERE
+                    UIG.HUI_ID = {hui_id}
+                and
+                	UIG.USER_ID = {user_id}
+            """
+      cursor.execute(query)
+      col_name = [desc[0] for desc in cursor.description]
+      rows = cursor.fetchall()
+      for row in rows:
+        hui_group = dict()
+        for name in col_name:
+          hui_group[name] = row[0]
+          row = row[1:]
+        result.append(hui_group)
+    return result[0]
 
   @staticmethod
   def get_hui_groups(user_id, get_db_conn):
